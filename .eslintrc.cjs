@@ -11,7 +11,7 @@ module.exports = {
   ],
   rules: {
     'prettier/prettier': [
-      'warn',
+      'off',
       {
         // useTabs：使用tab缩进还是空格缩进，选择false；
         useTabs: false,
