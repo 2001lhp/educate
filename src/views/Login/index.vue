@@ -1,22 +1,29 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { login } from '@/services/user';
+import { login, reg } from '@/services/user';
 import { showToast } from 'vant';
 import { useUserStore } from '@/stores/user';
-import { useRouter,useRoute } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 const router = useRouter()
 const route = useRoute()
-
+const show = ref(false)
 const store = useUserStore()
 const username = ref('lhp111');
 const password = ref('111111');
+const repassword = ref('')
 const onSubmit = async () => {
-  if (!checked.value) return showToast('请先阅读并同意用户协议&隐私声明')
-  const res = await login({ username: username.value, password: password.value, repassword: '' })
-  console.log(res);
-  store.user = res.data.data
-  showToast('登录成功')
-  router.push('/user')
+  if (show.value) {
+    const regres = await reg({ username: username.value, password: password.value, repassword: repassword.value })
+    console.log(regres);
+
+  } else {
+    if (!checked.value) return showToast('请先阅读并同意用户协议&隐私声明')
+    const res = await login({ username: username.value, password: password.value, repassword: repassword.value })
+    console.log(res);
+    store.user = res.data.data
+    showToast('登录成功')
+    router.push('/user')
+  }
 }
 const checked = ref(false)
 </script>
@@ -26,7 +33,7 @@ const checked = ref(false)
       <van-icon name="arrow-left" />
     </div>
     <van-form @submit="onSubmit">
-      <p>登 录</p>
+      <p>{{ show ? '注 册' : '登 录' }}</p>
       <van-cell-group inset>
         <van-field v-model="username" name="用户名" placeholder="请输入用户名">
           <template #left-icon>
@@ -38,20 +45,23 @@ const checked = ref(false)
             <img class="form-icon" src="../../assets/lock.png" alt="">
           </template>
         </van-field>
+        <van-field v-model="repassword" name="密码" placeholder="请输入确认密码" v-show="show">
+          <template #left-icon>
+            <img class="form-icon" src="../../assets/lock.png" alt="">
+          </template>
+        </van-field>
       </van-cell-group>
       <div style="">
-        <van-button block type="success" native-type="submit">
-          提 交
-        </van-button>
+        <van-button block type="success" native-type="submit">{{ show ? '注 册' : '登 录' }}</van-button>
       </div>
       <div class="font">
-        <span>注册账号</span>
-        <span>忘记密码？</span>
+        <span @click="show = !show">{{ show ? '去登录' : '注册账号' }}</span>
+        <span @click="$router.push('/forget')">忘记密码？</span>
       </div>
     </van-form>
     <div class="footer">
       <div class="img"><img src="@/assets/微信.png" alt=""></div>
-      <van-checkbox v-model="checked" shape="square">已阅读并同意用户协议&隐私声明</van-checkbox>
+      <van-checkbox v-show="!show" v-model="checked" shape="square">已阅读并同意用户协议&隐私声明</van-checkbox>
     </div>
   </div>
 </template>

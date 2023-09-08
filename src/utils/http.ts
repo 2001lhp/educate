@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { showToast } from 'vant'
+import { useUserStore } from '@/stores/user'
+const store = useUserStore()
 
 const http = axios.create({
   baseURL: 'http://demonuxtapi.dishait.cn/mobile/',
@@ -10,6 +12,7 @@ http.interceptors.request.use(
   (config) => {
     // Do something before request is sent
     config.headers.Appid = 'bd9d01ecc75dbbaaefce'
+    config.headers.token = store.user.token
     return config
   },
   (error) => {
